@@ -9,12 +9,17 @@ RUN apk add --no-cache \
     zip \
     unzip \
     postgresql-dev \
+    postgresql-client \
     oniguruma-dev \
     libzip-dev \
     freetype-dev \
     libjpeg-turbo-dev \
     libwebp-dev \
-    icu-dev
+    icu-dev \
+    bash \
+    autoconf \
+    g++ \
+    make
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -30,38 +35,36 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
         intl \
         opcache
 
+# Install Redis extension
+RUN pecl install redis \
+    && docker-php-ext-enable redis
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files
-COPY composer.json composer.lock ./
+# Copy composer file
+COPY composer.json ./
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Copy application code
+# Copy application code (this will include composer.lock if it exists)
 COPY . .
+
+# Install PHP dependencies (with dev dependencies for development)
+RUN composer install --optimize-autoloader --no-interaction
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
-
-# Create .env file if it doesn't exist
-RUN if [ ! -f .env ]; then cp .env.example .env; fi
-
-# Generate application key
-RUN php artisan key:generate
-
-# Run migrations and seeders
-RUN php artisan migrate --force \
-    && php artisan db:seed --force
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
 
 # Expose port
 EXPOSE 8000
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Start script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]

@@ -55,10 +55,10 @@ cp docker-config/web_frontend.env web_frontend/.env
 
 ```bash
 # Запуск всех сервисов
-docker-compose up -d
+docker compose up -d
 
 # Проверка статуса
-docker-compose ps
+docker compose ps
 ```
 
 ### 4. Настройка базы данных
@@ -86,7 +86,7 @@ project1/
 ├── web_frontend/           # Next.js Web App
 ├── customer_app/           # Flutter Mobile App
 ├── documentation/          # Static Documentation
-├── docker-compose.yml      # Docker Compose конфигурация
+├── docker compose.yml      # Docker Compose конфигурация
 ├── docker-config/          # Конфигурационные файлы
 ├── nginx/                  # Nginx конфигурация
 ├── database/               # SQL скрипты инициализации
@@ -124,38 +124,38 @@ project1/
 
 ```bash
 # Запуск всех сервисов
-docker-compose up -d
+docker compose up -d
 
 # Остановка всех сервисов
-docker-compose down
+docker compose down
 
 # Перезапуск конкретного сервиса
-docker-compose restart admin_backend
+docker compose restart admin_backend
 
 # Просмотр логов
-docker-compose logs -f admin_backend
+docker compose logs -f admin_backend
 
 # Выполнение команд в контейнере
-docker-compose exec admin_backend php artisan migrate
+docker compose exec admin_backend php artisan migrate
 ```
 
 ### Полезные команды Laravel
 
 ```bash
 # Миграции
-docker-compose exec admin_backend php artisan migrate
-docker-compose exec admin_backend php artisan migrate:rollback
+docker compose exec admin_backend php artisan migrate
+docker compose exec admin_backend php artisan migrate:rollback
 
 # Сидеры
-docker-compose exec admin_backend php artisan db:seed
+docker compose exec admin_backend php artisan db:seed
 
 # Очистка кэша
-docker-compose exec admin_backend php artisan cache:clear
-docker-compose exec admin_backend php artisan config:clear
-docker-compose exec admin_backend php artisan route:clear
+docker compose exec admin_backend php artisan cache:clear
+docker compose exec admin_backend php artisan config:clear
+docker compose exec admin_backend php artisan route:clear
 
 # Генерация ключа приложения
-docker-compose exec admin_backend php artisan key:generate
+docker compose exec admin_backend php artisan key:generate
 ```
 
 ## Настройка для продакшена
@@ -196,12 +196,12 @@ mkdir -p nginx/ssl
 
 ```bash
 # Все сервисы
-docker-compose logs -f
+docker compose logs -f
 
 # Конкретный сервис
-docker-compose logs -f admin_backend
-docker-compose logs -f postgres
-docker-compose logs -f nginx
+docker compose logs -f admin_backend
+docker compose logs -f postgres
+docker compose logs -f nginx
 ```
 
 ### Мониторинг ресурсов
@@ -221,48 +221,48 @@ curl http://localhost/health
 1. **Ошибка подключения к БД**
    ```bash
    # Проверьте статус PostgreSQL
-   docker-compose logs postgres
+   docker compose logs postgres
    
    # Перезапустите сервисы
-   docker-compose restart postgres admin_backend
+   docker compose restart postgres admin_backend
    ```
 
 2. **Ошибки миграций**
    ```bash
    # Очистите кэш и перезапустите миграции
-   docker-compose exec admin_backend php artisan config:clear
-   docker-compose exec admin_backend php artisan migrate:fresh --seed
+   docker compose exec admin_backend php artisan config:clear
+   docker compose exec admin_backend php artisan migrate:fresh --seed
    ```
 
 3. **Проблемы с правами доступа**
    ```bash
    # Исправьте права доступа
-   docker-compose exec admin_backend chown -R www-data:www-data storage bootstrap/cache
-   docker-compose exec admin_backend chmod -R 775 storage bootstrap/cache
+   docker compose exec admin_backend chown -R www-data:www-data storage bootstrap/cache
+   docker compose exec admin_backend chmod -R 775 storage bootstrap/cache
    ```
 
 ### Очистка и переустановка
 
 ```bash
 # Полная очистка
-docker-compose down -v
+docker compose down -v
 docker system prune -a
 
 # Пересборка образов
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ## Разработка
 
 ### Режим разработки
 
-Для разработки используйте отдельный docker-compose файл:
+Для разработки используйте отдельный docker compose файл:
 
 ```bash
-# Создайте docker-compose.dev.yml
+# Создайте docker compose.dev.yml
 # Запустите в режиме разработки
-docker-compose -f docker-compose.dev.yml up -d
+docker compose -f docker compose.dev.yml up -d
 ```
 
 ### Hot Reload
