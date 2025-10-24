@@ -9,7 +9,10 @@ RUN apk add --no-cache \
     libzip-dev \
     freetype-dev \
     libjpeg-turbo-dev \
-    libpng-dev
+    libpng-dev \
+    autoconf \
+    g++ \
+    make
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -18,7 +21,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     pdo \
     pdo_pgsql \
     mbstring \
-    zip
+    zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
